@@ -16,4 +16,4 @@ jobs:
             uses: actions/checkout@v2
 
           - name: Test action
-            uses: kimdre/cloud-init-linter@83e50b85d1c6b8288694d70128d3af773bf69dcc
+            uses: kimdre/cloud-init-linter@f65a7f17b27ad8625377f8011a48493d60f55d6f
