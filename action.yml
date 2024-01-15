@@ -2,7 +2,7 @@ name: 'cloud-init Lint'
 description: 'An action for linting cloud-init files'
 author: 'AnderssonPeter'
 
-inputs: 
+inputs:
   files:
     description: cloud-init files to scan
     required: false
@@ -29,6 +29,7 @@ runs:
         for config_file in "${config_files[@]}"; do
             echo "Linting $config_file"
             result="$(cloud-init devel schema --config-file $config_file 2>&1)"
+            echo "Result: $result"
             if [[ "$?" -eq 0 ]]
             then
                 echo "$config_file was valid"
