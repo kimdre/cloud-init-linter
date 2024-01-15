@@ -1,0 +1,33 @@
+---
+#cloud-config
+
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+packages:
+  - fail2ban
+  - unattended-upgrades
+
+write_files:
+  - path: /etc/fail2ban/jail.local
+    permissions: "0644"
+    owner: root:root
+    content: |
+      [sshd]
+      enabled = true
+      banaction = iptables-multiport
+
+runcmd:
+  - systemctl enable fail2ban
+  - sed -i -e '/^\(#\|\)PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding yes/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)MaxAuthTries/s/^.*$/MaxAuthTries 5/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding yes/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding yes/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)ForwardAgent/s/^.*$/ForwardAgent yes/' /etc/ssh/ssh_config
+  - timedatectl set-timezone Europe/Berlin
+  - timedatectl set-ntp on
+  - localectl set-locale LC_TIME=de_DE.UTF-8
+  - init 6
