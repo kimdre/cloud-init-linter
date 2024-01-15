@@ -1,7 +1,6 @@
 name: 'cloud-init Lint'
 description: 'An action for linting cloud-init files'
 author: 'AnderssonPeter'
-
 inputs:
   files:
     description: cloud-init files to scan
@@ -10,37 +9,9 @@ inputs:
   ignore:
     description: Files or directories to ignore
     required: false
-
 runs:
-  using: "composite"
-  steps:
-    - name: "Install cloud-init"
-      shell: bash
-      run: |
-        if ! command -v cloud-init; then
-          sudo apt-get update && sudo apt-get install --no-install-recommends -y cloud-init
-        fi
-
-    - name: "Lint cloud-init"
-      shell: bash
-      run: |
-        readarray -t config_files < <(ls cloud-init*.{yml,yaml} -1q 2> /dev/null)
-        had_errors=0
-        for config_file in "${config_files[@]}"; do
-            echo "Linting $config_file"
-            result="$(cloud-init devel schema --config-file $config_file 2>&1)"
-            echo "Result: $result"
-            if [[ "$?" -eq 0 ]]
-            then
-                echo "$config_file was valid"
-            else
-                echo "::error file=$config_file::$result"
-                had_errors=1
-            fi
-        done
-
-        exit $had_errors
-
+  using: docker
+  image: Dockerfile
 branding:
   color: blue
   icon: upload-cloud
